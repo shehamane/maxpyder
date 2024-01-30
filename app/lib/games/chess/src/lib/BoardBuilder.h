@@ -5,6 +5,9 @@
 
 class BoardBuilder {
     std::vector<Cell> board;
+    std::vector<Figure> blackFigures, whiteFigures;
+
+    void setFigures();
 
     void setPawns();
 

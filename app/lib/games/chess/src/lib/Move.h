@@ -1,13 +1,12 @@
-//
-// Created by kurikuri on 30.01.24.
-//
-
 #ifndef CHESS_MOVE_H
 #define CHESS_MOVE_H
 
 
-class Move {
+struct Move {
+public:
+    unsigned int from, to;
 
+    Move(unsigned int from, unsigned int to);
 };
 
 

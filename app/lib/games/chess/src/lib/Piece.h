@@ -1,13 +1,14 @@
-//
-// Created by kurikuri on 30.01.24.
-//
-
 #ifndef CHESS_PIECE_H
 #define CHESS_PIECE_H
 
 
-class Piece {
-
+enum Piece {
+    Pawn,
+    Bishop,
+    Knight,
+    Rook,
+    Queen,
+    King
 };
 
 

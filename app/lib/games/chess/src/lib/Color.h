@@ -1,9 +1,9 @@
-#ifndef CHESS_CELLCOLOR_H
-#define CHESS_CELLCOLOR_H
+#ifndef CHESS_COLOR_H
+#define CHESS_COLOR_H
 
 enum Color {
     White,
     Black
 };
 
-#endif //CHESS_CELLCOLOR_H
+#endif //CHESS_COLOR_H

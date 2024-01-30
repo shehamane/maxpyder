@@ -1,5 +1,10 @@
-//
-// Created by kurikuri on 25.01.24.
-//
-
 #include "Player.h"
+
+Player::Player(GameController *gc, Color c) : color(c), gameController(gc) {}
+
+void Player::makeMove(Move move) {
+    if (gameController->checkMove(move, color)){
+        gameController->applyMove(move);
+    }
+}
+

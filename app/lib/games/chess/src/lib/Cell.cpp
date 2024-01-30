@@ -1,5 +1,9 @@
-//
-// Created by kurikuri on 30.01.24.
-//
-
 #include "Cell.h"
+
+Cell::Cell() : figure(nullptr) {}
+
+Cell::Cell(Figure *p) : figure(p) {}
+
+bool Cell::isEmpty() {
+    return figure == nullptr;
+}

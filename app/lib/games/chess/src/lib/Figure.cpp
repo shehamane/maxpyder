@@ -1,3 +1,3 @@
 #include "Figure.h"
 
-Piece::Piece(Color color) : color(color) {}
+Figure::Figure(Color color, Piece piece) : color(color), piece(piece) {}
