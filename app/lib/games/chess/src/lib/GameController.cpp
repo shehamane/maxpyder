@@ -2,6 +2,23 @@
 
 GameController::GameController() {
     board.build();
+    for (int i = 0; i < 64; ++i) {
+        generateMask(i, false);
+    }
+
+    for (auto figure: *board.getFigures(White)) {
+        std::cout << std::endl;
+        std::cout << "=========" << figure.piece;
+        for (int i = 0; i < 64; ++i) {
+            if (!(i % 8)) {
+                std::cout << std::endl;
+            }
+            if (figure.moveMask[i])
+                std::cout << "o";
+            else
+                std::cout << " ";
+        }
+    }
 }
 
 void GameController::checkWhitePawnMove(int idx, std::vector<bool> &mask) {
@@ -41,82 +58,89 @@ void GameController::checkBlackPawnAttack(int idx, std::vector<bool> &mask) {
 }
 
 void GameController::checkDiag(int idx, std::vector<bool> &mask, int mpr, int add) {
-    bool isEmpty = false;
+    bool isEmpty = true;
 
     int cur_idx = idx;
     do {
         cur_idx += (8 + add) * mpr;
+        if (cur_idx < 0 || cur_idx > 63) {
+            continue;
+        }
         isEmpty = board.getCell(cur_idx).isEmpty();
         if (isEmpty) {
             mask[cur_idx] = true;
         }
-    } while (!isEmpty && idx > 0 && idx < 64);
+    } while (isEmpty && cur_idx > 0 && cur_idx < 64);
 }
 
 void GameController::checkKnight(int idx, std::vector<bool> &mask) {
     if (idx < 48 && idx % 8 != 7) {
-        mask[idx + 17] = true;
+        mask[idx + 17] = board.getCell(idx + 17).isEmpty();
     }
     if (idx < 48 && idx % 8) {
-        mask[idx + 15] = true;
+        mask[idx + 15] = board.getCell(idx + 15).isEmpty();;
     }
     if (idx < 56 && idx % 8 < 6) {
-        mask[idx + 10] = true;
+        mask[idx + 10] = board.getCell(idx + 10).isEmpty();;
     }
     if (idx < 56 && idx % 8 > 1) {
-        mask[idx + 6] = true;
+        mask[idx + 6] = board.getCell(idx + 6).isEmpty();;
     }
     if (idx > 16 && idx % 8 != 7) {
-        mask[idx - 17] = true;
+        mask[idx - 17] = board.getCell(idx - 17).isEmpty();;
     }
     if (idx > 16 && idx % 8) {
-        mask[idx - 15] = true;
+        mask[idx - 15] = board.getCell(idx - 15).isEmpty();;
     }
     if (idx > 8 && idx % 8 < 6) {
-        mask[idx - 10] = true;
+        mask[idx - 10] = board.getCell(idx - 10).isEmpty();;
     }
     if (idx > 8 && idx % 8 > 1) {
-        mask[idx - 6] = true;
+        mask[idx - 6] = board.getCell(idx - 6).isEmpty();;
     }
 }
 
 void GameController::checkAxe(int idx, std::vector<bool> &mask, int mpr, int add) {
-    bool isEmpty = false;
+    bool isEmpty = true;
 
     int cur_idx = idx;
+
     do {
         cur_idx += (8 * mpr) + add;
+        if (cur_idx < 0 || cur_idx > 63) {
+            continue;
+        }
         isEmpty = board.getCell(cur_idx).isEmpty();
         if (isEmpty) {
             mask[cur_idx] = true;
         }
-    } while (!isEmpty && idx > 0 && idx < 64);
+    } while (isEmpty && cur_idx > 0 && cur_idx < 64);
 }
 
 void GameController::checkKing(int idx, std::vector<bool> &mask) {
     if (idx % 8 != 7) {
-        mask[idx + 1] = true;
+        mask[idx + 1] = board.getCell(idx + 1).isEmpty();;
         if (idx > 7) {
-            mask[idx - 9] = true;
+            mask[idx - 9] = board.getCell(idx - 9).isEmpty();;
         }
         if (idx < 56) {
-            mask[idx + 9] = true;
+            mask[idx + 9] = board.getCell(idx + 9).isEmpty();;
         }
     }
     if (idx % 8) {
-        mask[idx - 1] = true;
+        mask[idx - 1] = board.getCell(idx - 1).isEmpty();;
         if (idx > 7) {
-            mask[idx - 7] = true;
+            mask[idx - 7] = board.getCell(idx - 7).isEmpty();;
         }
         if (idx < 56) {
-            mask[idx + 7] = true;
+            mask[idx + 7] = board.getCell(idx + 7).isEmpty();;
         }
     }
     if (idx > 7) {
-        mask[idx - 8] = true;
+        mask[idx - 8] = board.getCell(idx - 8).isEmpty();;
     }
     if (idx < 56) {
-        mask[idx + 8] = true;
+        mask[idx + 8] = board.getCell(idx + 8).isEmpty();;
     }
 }
 
@@ -146,7 +170,7 @@ bool GameController::isCheck(Color color) {
     return false;
 }
 
-void GameController::generateMask(int idx) {
+void GameController::generateMask(int idx, bool checkCheck) {
     Cell cell = board.getCell(idx);
     if (cell.isEmpty()) {
         return;
@@ -186,15 +210,17 @@ void GameController::generateMask(int idx) {
         checkKing(idx, mask);
     }
 
-    for (int i = 0; i < 64; ++i) {
-        if (mask[i]) {
-            GameController simulation = *this;
-            simulation.applyMove(Move(idx, i));
-            for (int j = 0; j < 64; ++j) {
-                simulation.generateMask(j);
-            }
-            if (simulation.isCheck(cell.figure->color)) {
-                mask[i] = false;
+    if (checkCheck) {
+        for (int i = 0; i < 64; ++i) {
+            if (mask[i]) {
+                GameController simulation = *this;
+                simulation.applyMove(Move(idx, i));
+                for (int j = 0; j < 64; ++j) {
+                    simulation.generateMask(j, false);
+                }
+                if (simulation.isCheck(cell.figure->color)) {
+                    mask[i] = false;
+                }
             }
         }
     }

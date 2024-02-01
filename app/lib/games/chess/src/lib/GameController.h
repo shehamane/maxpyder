@@ -29,7 +29,7 @@ private:
 
     bool isCheck(Color color);
 
-    void generateMask(int idx);
+    void generateMask(int idx, bool checkCheck = true);
 
 public:
     GameController();
