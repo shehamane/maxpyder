@@ -1,11 +1,7 @@
 #include "GameController.h"
-#include "BoardBuilder.h"
-
-#include <cmath>
 
 GameController::GameController() {
-    BoardBuilder boardBuilder;
-    board = boardBuilder.build();
+    board.build();
 }
 
 void GameController::checkWhitePawnMove(int idx, std::vector<bool> &mask) {
@@ -124,6 +120,32 @@ void GameController::checkKing(int idx, std::vector<bool> &mask) {
     }
 }
 
+bool GameController::isCheck(Color color) {
+    unsigned int kingIdx;
+    for (int i = 0; i < 64; ++i) {
+        Cell cell = board.getCell(i);
+        if (!cell.isEmpty() && cell.figure->piece == King && cell.figure->color == color) {
+            kingIdx = i;
+            break;
+        }
+    }
+
+
+    Color oppositeColor = White;
+    if (color == White) {
+        oppositeColor = Black;
+    }
+
+    std::vector<Figure> *oppositeFigures = board.getFigures(oppositeColor);
+
+    for (auto figure: *oppositeFigures) {
+        if (figure.moveMask[kingIdx]) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void GameController::generateMask(int idx) {
     Cell cell = board.getCell(idx);
     if (cell.isEmpty()) {
@@ -163,48 +185,44 @@ void GameController::generateMask(int idx) {
     } else {
         checkKing(idx, mask);
     }
-}
 
-
-/*bool GameController::checkRule(Piece piece, Color color, Move move) {
-    switch (piece) {
-        case Pawn:
-            return ((color == White &&
-                     ((move.from > 8 && move.from < 16 && (move.to == move.from + 8 || move.to == move.from + 16))
-                      || (move.to == move.from + 8))) ||
-                    (color == Black &&
-                     ((move.from > 48 && move.from < 56 && (move.to == move.from - 8 || move.to == move.from - 16))
-                      || (move.to == move.from - 8))));
-        case Bishop:
-            return (abs((int) (move.from % 8) - (int) (move.to % 8)) ==
-                    abs((int) (move.from / 8) - (int) (move.to / 8)));
-        case Knight:
-            return ((abs((int) (move.from % 8) - (int) (move.to % 8)) == 2 &&
-                     abs((int) (move.from / 8) - (int) (move.to / 8)) == 1) ||
-                    (abs((int) (move.from % 8) - (int) (move.to % 8)) == 1 &&
-                     abs((int) (move.from / 8) - (int) (move.to / 8)) == 2));
-        case Rook:
-            return ((move.from % 8 == move.to % 8) || (move.from / 8 == move.to / 8));
-        case Queen:
-            return ((move.from % 8 == move.to % 8) || (move.from / 8 == move.to / 8) ||
-                    (abs((int) (move.from % 8) - (int) (move.to % 8)) ==
-                     abs((int) (move.from / 8) - (int) (move.to / 8))));
-        case King:
-            return (abs((int) (move.from % 8) - (int) (move.to % 8)) <= 1 &&
-                    abs((int) (move.from / 8) - (int) (move.to / 8)) <= 1);
-        case Empty:
-            return false;
+    for (int i = 0; i < 64; ++i) {
+        if (mask[i]) {
+            GameController simulation = *this;
+            simulation.applyMove(Move(idx, i));
+            for (int j = 0; j < 64; ++j) {
+                simulation.generateMask(j);
+            }
+            if (simulation.isCheck(cell.figure->color)) {
+                mask[i] = false;
+            }
+        }
     }
-}
 
+    cell.figure->moveMask = std::vector<bool>(mask.begin(), mask.end());
+}
 
 bool GameController::checkMove(Move move, Color color) {
-    if (!((board.getCell(move.from)->color == White && color == WhitePlayer)
-          || (board.getCell(move.from)->color == Black && color == BlackPlayer))) {
+    Cell cell = board.getCell(move.from);
+    if (cell.isEmpty()) {
         return false;
     }
-
-
+    if (cell.figure->color == color && cell.figure->moveMask[move.to]) {
+        return true;
+    }
+    return false;
 }
 
-*/
+void GameController::applyMove(Move move) {
+    board.applyMove(move);
+}
+
+void GameController::print() {
+    for (int i = 0; i < 64; ++i) {
+        if (i % 8 == 0) {
+            std::cout << std::endl;
+        }
+        Cell cell = board.getCell(i);
+        cell.print();
+    }
+}

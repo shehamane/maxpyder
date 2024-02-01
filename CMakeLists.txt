@@ -11,8 +11,6 @@ add_library(ChessLib
         app/lib/games/chess/src/lib/Board.cpp
         app/lib/games/chess/src/lib/Player.h
         app/lib/games/chess/src/lib/Player.cpp
-        app/lib/games/chess/src/lib/BoardBuilder.h
-        app/lib/games/chess/src/lib/BoardBuilder.cpp
         app/lib/games/chess/src/lib/Cell.h
         app/lib/games/chess/src/lib/Cell.cpp
         app/lib/games/chess/src/lib/Move.h

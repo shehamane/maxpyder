@@ -11,6 +11,8 @@ struct Cell {
     explicit Cell(Figure *p);
 
     bool isEmpty();
+
+    void print();
 };
 
 

@@ -13,14 +13,33 @@ class Board {
 private:
     std::vector<Cell> board;
     std::vector<Figure> whiteFigures, blackFigures;
-public:
-    explicit Board();
 
-    explicit Board(std::vector<Cell> board);
+    void setFigures();
+
+    void setPawns();
+
+    void setRooks();
+
+    void setKnights();
+
+    void setBishops();
+
+    void setQueens();
+
+    void setKings();
+
+public:
+    Board();
+
+    void build();
 
     Cell &getCell(unsigned int idx);
 
     void applyMove(Move move);
+
+    Figure getKing(Color color);
+
+    std::vector<Figure> *getFigures(Color color);
 };
 
 

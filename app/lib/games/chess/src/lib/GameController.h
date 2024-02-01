@@ -4,7 +4,8 @@
 #pragma once
 
 #include "Board.h"
-#include "BoardBuilder.h"
+
+#include <iostream>
 
 class GameController {
 private:
@@ -26,18 +27,18 @@ private:
 
     void checkKing(int idx, std::vector<bool> &mask);
 
-    void checkCheck();
+    bool isCheck(Color color);
 
     void generateMask(int idx);
-
-    static bool checkRule(Piece piece, Color color, Move move);
 
 public:
     GameController();
 
     bool checkMove(Move move, Color color);
 
-    bool applyMove(Move move);
+    void applyMove(Move move);
+
+    void print();
 };
 
 
